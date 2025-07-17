@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>เด็กหัวการค้าในยุค AI - เด็กหัวการค้า</title>
+    <!-- Chosen Palette: Futuristic Dark (Deep space blues/purples, electric accents, glowing shadows) -->
+    <!-- Application Structure Plan: The application is designed as a single-page informational website with a clear, linear flow. It includes a sticky header for navigation, a prominent hero section for the main message, and distinct content sections: "About" (defining the core concept), "Key Skills" (showcasing essential attributes), "AI in Business Comparison" (presenting advantages/disadvantages), "Programs" (highlighting relevant academic paths). Each major section and its key elements (images, text blocks, cards) are designed to animate into view as the user scrolls, creating a dynamic and engaging exploration experience. The "AI in Business Comparison" section uses a two-column layout for direct comparison. This structure was chosen to facilitate easy and intuitive consumption of information, suitable for a submission, with a strong emphasis on modern visual appeal and responsiveness across various devices. -->
+    <!-- Visualization & Content Choices: 
+        1. Main Sections: Goal: Organize information logically. Method: HTML sections with distinct IDs. Justification: Provides clear content segmentation and supports smooth navigation. Each section is set up for scroll-triggered animation.
+        2. Hero Section: Goal: Capture attention and convey the core message. Method: Large, bold typography, a refined gradient background with subtle pulsating effect, and concise descriptive text. Justification: Creates an immediate, impactful and visually appealing introduction with a dynamic background.
+        3. About/Skills/Programs: Goal: Present textual and list-based information. Method: Clean text blocks and a grid of visually engaging cards, enhanced with relevant emojis as icons. Interaction: Elements within these sections (image, text, individual cards) are animated into view using Intersection Observer with staggered delays. Justification: Improves readability and visual engagement for key concepts, making complex information digestible through progressive reveal.
+        4. AI Comparison: Goal: Directly compare the benefits of using AI versus the drawbacks of not using it. Method: Responsive two-column layout (flexbox/grid) with distinct, yet harmonious, styling for each side (a soft blue for advantages, a subtle red for disadvantages), utilizing clear bullet points and bolded titles. Interaction: Both columns animate into view as the section enters the viewport. Justification: Optimizes for direct visual comparison, effectively highlighting critical differences and their implications with a smooth entrance.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts - Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0F172A; /* Deeper dark background (slate-900) */
+            color: #E2E8F0; /* Light text for readability */
+        }
+        /* Custom styles for better aesthetics */
+        .gradient-bg {
+            background: linear-gradient(135deg, #1A2B4C 0%, #5C2D91 100%); /* More sophisticated dark blue to deep violet */
+            position: relative;
+            overflow: hidden;
+        }
+        .gradient-bg::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at 50% 50%, rgba(59, 130, 246, 0.15) 0%, transparent 70%); /* Slightly stronger glow */
+            animation: subtle-pulse 15s infinite alternate ease-in-out;
+            opacity: 0.6; /* Slightly more visible glow */
+            z-index: 0;
+        }
+        @keyframes subtle-pulse {
+            0% { transform: scale(1); opacity: 0.6; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+            100% { transform: scale(1); opacity: 0.6; }
+        }
+
+        .text-gradient {
+            background: linear-gradient(45deg, #3B82F6, #A78BFA);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .card {
+            background-color: #1F2937; /* Darker card background (gray-900) for better contrast */
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4), 0 0 20px rgba(59, 130, 246, 0.15); /* Deeper shadow with subtle blue glow */
+            transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), border-color 0.4s ease-in-out;
+            border-radius: 2rem; /* Consistent large rounded corners */
+            border: 1px solid rgba(59, 130, 246, 0.1); /* Subtle blue border */
+        }
+        .card:hover {
+            transform: translateY(-15px); /* More pronounced lift */
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.7), 0 0 30px rgba(59, 130, 246, 0.3); /* Stronger shadow and glow on hover */
+            border-color: rgba(59, 130, 246, 0.5); /* More visible border on hover */
+        }
+        /* Keyframe for scroll reveal */
+        @keyframes slideInUp {
+            from { opacity: 0; transform: translateY(50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-on-scroll {
+            opacity: 0;
+            transform: translateY(50px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out; /* Base transition */
+        }
+        .animate-on-scroll.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        /* Specific delays for staggered animations */
+        /* These classes are now applied dynamically by JS using style.transitionDelay */
+
+
+        /* Mobile menu specific styles */
+        .mobile-nav-open {
+            display: flex;
+            flex-direction: column;
+            position: absolute;
+            top: 4.5rem; /* Adjust based on header height */
+            left: 0;
+            width: 100%;
+            background-color: #1F2937; /* Darker background for mobile menu */
+            box-shadow: 0 8px 16px rgba(0,0,0,0.5);
+            padding-top: 1rem;
+            padding-bottom: 1rem;
+            align-items: center;
+            z-index: 10;
+            border-bottom-left-radius: 1.5rem;
+            border-bottom-right-radius: 1.5rem;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Header Section -->
+    <header class="bg-gray-900 shadow-2xl py-4 fixed w-full z-20 top-0 rounded-b-3xl">
+        <div class="container mx-auto px-6 flex justify-between items-center">
+            <div class="flex items-center">
+                <!-- University Logo Placeholder -->
+                <img src="https://placehold.co/55x55/1A2B4C/3B82F6?text=UTCC" alt="โลโก้เด็กหัวการค้า" class="rounded-full mr-3 shadow-md">
+                <a href="#" class="text-2xl font-extrabold text-gray-100 tracking-tight">เด็กหัวการค้า</a>
+            </div>
+            <nav class="hidden md:flex space-x-8">
+                <a href="#hero" class="text-gray-300 hover:text-blue-400 font-semibold transition duration-300 transform hover:scale-105">หน้าแรก</a>
+                <a href="#about" class="text-gray-300 hover:text-blue-400 font-semibold transition duration-300 transform hover:scale-105">เกี่ยวกับเรา</a>
+                <a href="#skills" class="text-gray-300 hover:text-blue-400 font-semibold transition duration-300 transform hover:scale-105">ทักษะสำคัญ</a>
+                <a href="#ai-comparison" class="text-gray-300 hover:text-blue-400 font-semibold transition duration-300 transform hover:scale-105">AI ในธุรกิจ</a>
+                <a href="#programs" class="text-gray-300 hover:text-blue-400 font-semibold transition duration-300 transform hover:scale-105">หลักสูตร</a>
+            </nav>
+            <!-- Mobile Menu Button (Hamburger) -->
+            <button id="mobile-menu-button" class="md:hidden text-gray-300 hover:text-blue-400 focus:outline-none">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+            </button>
+        </div>
+        <!-- Mobile Navigation Menu -->
+        <nav id="mobile-nav-menu" class="hidden md:hidden">
+            <a href="#hero" class="block py-3 px-4 text-gray-300 hover:bg-gray-700 hover:text-blue-400 font-medium text-center transition duration-300 rounded-lg">หน้าแรก</a>
+            <a href="#about" class="block py-3 px-4 text-gray-300 hover:bg-gray-700 hover:text-blue-400 font-medium text-center transition duration-300 rounded-lg">เกี่ยวกับเรา</a>
+            <a href="#skills" class="block py-3 px-4 text-gray-300 hover:bg-gray-700 hover:text-blue-400 font-medium text-center transition duration-300 rounded-lg">ทักษะสำคัญ</a>
+            <a href="#ai-comparison" class="block py-3 px-4 text-gray-300 hover:bg-gray-700 hover:text-blue-400 font-medium text-center transition duration-300 rounded-lg">AI ในธุรกิจ</a>
+            <a href="#programs" class="block py-3 px-4 text-gray-300 hover:bg-gray-700 hover:text-blue-400 font-medium text-center transition duration-300 rounded-lg">หลักสูตร</a>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section id="hero" class="gradient-bg text-white py-32 md:py-48 text-center rounded-b-4xl mt-18">
+        <div class="container mx-auto px-6 relative z-10">
+            <h1 class="text-5xl md:text-7xl font-extrabold leading-tight mb-6 animate-fade-in">
+                <span class="block">สร้างอนาคตธุรกิจของคุณ</span>
+                <span class="block">เป็น <span class="text-yellow-300">"เด็กหัวการค้าในยุค AI"</span></span>
+            </h1>
+            <p class="text-xl md:text-2xl mb-12 max-w-5xl mx-auto opacity-90 animate-fade-in animate-delay-200">
+                เด็กหัวการค้า เตรียมคุณให้พร้อมสำหรับโลกธุรกิจที่ขับเคลื่อนด้วยปัญญาประดิษฐ์ ด้วยหลักสูตรที่ทันสมัยและทักษะที่จำเป็น
+            </p>
+        </div>
+    </section>
+
+    <!-- About Section: What is "เด็กหัวการค้าในยุค AI"? -->
+    <section id="about" class="py-24 md:py-36 bg-gray-900 rounded-3xl mx-auto -mt-16 relative z-10 shadow-2xl max-w-7xl px-8">
+        <div class="container mx-auto">
+            <h2 class="text-4xl md:text-5xl font-bold text-center mb-16 text-gray-100 animate-on-scroll">
+                "เด็กหัวการค้าในยุค AI" คืออะไร?
+            </h2>
+            <div class="flex flex-col md:flex-row items-center gap-16">
+                <div class="md:w-1/2 animate-on-scroll">
+                    <img src="https://placehold.co/650x450/2D3748/3B82F6?text=AI+in+Business" alt="ภาพแนวคิด AI ในธุรกิจ" class="rounded-3xl shadow-2xl w-full h-auto">
+                </div>
+                <div class="md:w-1/2 text-xl leading-relaxed text-gray-300 animate-on-scroll">
+                    <p class="mb-8">
+                        ในยุคที่ปัญญาประดิษฐ์ (AI) เข้ามามีบทบาทสำคัญในทุกภาคส่วนของธุรกิจ "เด็กหัวการค้าในยุค AI" ไม่ใช่แค่ผู้ที่เข้าใจเทคโนโลยีเท่านั้น แต่คือผู้ที่สามารถผสานความรู้ทางธุรกิจเข้ากับความเข้าใจใน AI ได้อย่างลึกซึ้ง
+                    </p>
+                    <p class="mb-8">
+                        พวกเขาสามารถนำ AI มาเป็นเครื่องมือในการวิเคราะห์ข้อมูล, สร้างกลยุทธ์ใหม่ๆ, พัฒนานวัตกรรม, และแก้ปัญหาทางธุรกิจที่ซับซ้อนได้อย่างมีประสิทธิภาพ เพื่อขับเคลื่อนองค์กรให้เติบโตอย่างยั่งยืนในโลกที่เปลี่ยนแปลงไปอย่างรวดเร็ว
+                    </p>
+                    <p>
+                        ที่เด็กหัวการค้า เรามุ่งมั่นที่จะสร้างบัณฑิตที่มีคุณสมบัติเหล่านี้ เพื่อให้คุณเป็นผู้นำทางธุรกิจแห่งอนาคต ด้วยหลักสูตรที่ทันสมัยและสภาพแวดล้อมการเรียนรู้ที่ส่งเสริมความคิดสร้างสรรค์
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Key Skills Section -->
+    <section id="skills" class="py-24 md:py-36 bg-gray-800">
+        <div class="container mx-auto px-6">
+            <h2 class="text-4xl md:text-5xl font-bold text-center mb-20 text-gray-100 animate-on-scroll">
+                ทักษะสำคัญของ "เด็กหัวการค้าในยุค AI"
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
+                <!-- Skill Card 1 -->
+                <div class="bg-gray-900 p-10 rounded-3xl shadow-xl card animate-on-scroll">
+                    <div class="text-blue-400 text-6xl mb-5 text-center">💡</div>
+                    <h3 class="text-2xl font-bold text-gray-100 mb-4 text-center">ความเข้าใจ AI และการประยุกต์ใช้</h3>
+                    <p class="text-gray-300 text-center leading-relaxed">รู้หลักการพื้นฐานของ AI และนำมาใช้แก้ปัญหาทางธุรกิจได้อย่างชาญฉลาด</p>
+                </div>
+                <!-- Skill Card 2 -->
+                <div class="bg-gray-900 p-10 rounded-3xl shadow-xl card animate-on-scroll">
+                    <div class="text-blue-400 text-6xl mb-5 text-center">📊</div>
+                    <h3 class="text-2xl font-bold text-gray-100 mb-4 text-center">การคิดวิเคราะห์และแก้ปัญหา</h3>
+                    <p class="text-gray-300 text-center leading-relaxed">วิเคราะห์ข้อมูลเชิงลึกและตัดสินใจเชิงกลยุทธ์ได้อย่างแม่นยำและรวดเร็ว</p>
+                </div>
+                <!-- Skill Card 3 -->
+                <div class="bg-gray-900 p-10 rounded-3xl shadow-xl card animate-on-scroll">
+                    <div class="text-blue-400 text-6xl mb-5 text-center">🎨</div>
+                    <h3 class="text-2xl font-bold text-gray-100 mb-4 text-center">ความคิดสร้างสรรค์และนวัตกรรม</h3>
+                    <p class="text-gray-300 text-center leading-relaxed">สร้างสรรค์สิ่งใหม่ๆ และนำ AI มาเสริมศักยภาพในการสร้างสรรค์ได้อย่างไร้ขีดจำกัด</p>
+                </div>
+                <!-- Skill Card 4 -->
+                <div class="bg-gray-900 p-10 rounded-3xl shadow-xl card animate-on-scroll">
+                    <div class="text-blue-400 text-6xl mb-5 text-center">📚</div>
+                    <h3 class="text-2xl font-bold text-gray-100 mb-4 text-center">การเรียนรู้ตลอดชีวิต</h3>
+                    <p class="text-gray-300 text-center leading-relaxed">ปรับตัวและเรียนรู้สิ่งใหม่ๆ ได้อย่างรวดเร็ว เพื่อก้าวทันโลกที่เปลี่ยนแปลง</p>
+                </div>
+                <!-- Skill Card 5 -->
+                <div class="bg-gray-900 p-10 rounded-3xl shadow-xl card animate-on-scroll">
+                    <div class="text-blue-400 text-6xl mb-5 text-center">🤝</div>
+                    <h3 class="text-2xl font-bold text-gray-100 mb-4 text-center">การสื่อสารและการทำงานร่วมกัน</h3>
+                    <p class="text-gray-300 text-center leading-relaxed">ทำงานเป็นทีมและสื่อสารได้อย่างมีประสิทธิภาพ สร้างเครือข่ายที่แข็งแกร่ง</p>
+                </div>
+                <!-- Skill Card 6 -->
+                <div class="bg-gray-900 p-10 rounded-3xl shadow-xl card animate-on-scroll">
+                    <div class="text-blue-400 text-6xl mb-5 text-center">⚖️</div>
+                    <h3 class="text-2xl font-bold text-gray-100 mb-4 text-center">จริยธรรม AI และความรับผิดชอบ</h3>
+                    <p class="text-gray-300 text-center leading-relaxed">ใช้ AI อย่างมีคุณธรรมและยั่งยืน คำนึงถึงผลกระทบต่อสังคม</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- New Section: AI in Business Comparison -->
+    <section id="ai-comparison" class="py-24 md:py-36 bg-gray-900">
+        <div class="container mx-auto px-6">
+            <h2 class="text-4xl md:text-5xl font-bold text-center mb-16 text-gray-100 animate-on-scroll">
+                AI ในธุรกิจ: ข้อได้เปรียบและการรับมือ
+            </h2>
+            <p class="max-w-5xl mx-auto text-center text-xl text-gray-300 mb-16 animate-on-scroll">
+                การนำ AI มาใช้ในธุรกิจไม่ใช่แค่ทางเลือก แต่เป็นสิ่งจำเป็นสำหรับความอยู่รอดและการเติบโตในยุคปัจจุบัน มาดูกันว่าการตัดสินใจนี้ส่งผลอย่างไรต่อองค์กรของคุณ
+            </p>
+
+            <div class="flex flex-col lg:flex-row gap-12">
+                <!-- Advantages of Using AI -->
+                <div class="lg:w-1/2 bg-blue-900 p-10 rounded-3xl shadow-xl animate-on-scroll">
+                    <h3 class="text-3xl font-bold text-blue-300 mb-8 text-center">
+                        ✅ ข้อได้เปรียบของการใช้ AI ในธุรกิจ
+                    </h3>
+                    <ul class="space-y-8 text-lg text-gray-200">
+                        <li>
+                            <strong class="text-blue-100 text-xl">⚡️ เพิ่มประสิทธิภาพและระบบอัตโนมัติ:</strong>
+                            <p class="ml-8 mt-2">สามารถทำงานซ้ำๆ หรืองานที่ใช้เวลานานได้อย่างรวดเร็วและแม่นยำ ลดภาระงานของมนุษย์และเพิ่มความเร็วในการดำเนินงาน</p>
+                            <p class="ml-8 text-sm text-gray-400 italic">ตัวอย่าง: ระบบ AI คัดแยกอีเมลลูกค้าอัตโนมัติ, หุ่นยนต์ในโรงงาน</p>
+                        </li>
+                        <li>
+                            <strong class="text-blue-100 text-xl">📊 การวิเคราะห์ข้อมูลเชิงลึกและการตัดสินใจที่ดีขึ้น:</strong>
+                            <p class="ml-8 mt-2">ประมวลผลและวิเคราะห์ข้อมูลขนาดใหญ่ (Big Data) เพื่อค้นหารูปแบบและแนวโน้ม ช่วยให้การตัดสินใจแม่นยำขึ้น</p>
+                            <p class="ml-8 text-sm text-gray-400 italic">ตัวอย่าง: AI วิเคราะห์พฤติกรรมการซื้อเพื่อแนะนำสินค้า, คาดการณ์ยอดขาย</p>
+                        </li>
+                        <li>
+                            <strong class="text-blue-100 text-xl">👥 การปรับแต่งเฉพาะบุคคลและประสบการณ์ลูกค้าที่ดีขึ้น:</strong>
+                            <p class="ml-8 mt-2">เรียนรู้ความต้องการของลูกค้าแต่ละราย เพื่อนำเสนอสินค้า บริการ หรือประสบการณ์ที่ปรับแต่งให้เหมาะสม</p>
+                            <p class="ml-8 text-sm text-gray-400 italic">ตัวอย่าง: ระบบแนะนำภาพยนตร์ใน Netflix, โฆษณาที่ปรับแต่งเฉพาะบุคคล</p>
+                        </li>
+                        <li>
+                            <strong class="text-blue-100 text-xl">💡 นวัตกรรมและการสร้างโมเดลธุรกิจใหม่:</strong>
+                            <p class="ml-8 mt-2">ขับเคลื่อนการสร้างสรรค์ผลิตภัณฑ์ บริการ และโมเดลธุรกิจใหม่ๆ ที่ไม่เคยมีมาก่อน ทำให้เกิดโอกาสทางธุรกิจที่ไม่จำกัด</p>
+                            <p class="ml-8 text-sm text-gray-400 italic">ตัวอย่าง: รถยนต์ไร้คนขับ, ระบบวินิจฉัยโรคทางการแพทย์</p>
+                        </li>
+                        <li>
+                            <strong class="text-blue-100 text-xl">💰 ลดต้นทุนและเพิ่มผลกำไร:</strong>
+                            <p class="ml-8 mt-2">ลดความจำเป็นในการใช้แรงงานคน ลดข้อผิดพลาด และเพิ่มประสิทธิภาพในการใช้ทรัพยากร</p>
+                            <p class="ml-8 text-sm text-gray-400 italic">ตัวอย่าง: AI เพิ่มประสิทธิภาพเส้นทางการขนส่ง, ตรวจสอบคุณภาพสินค้า</p>
+                        </li>
+                        <li>
+                            <strong class="text-blue-100 text-xl">🏆 ความสามารถในการแข่งขัน:</strong>
+                            <p class="ml-8 mt-2">สร้างความได้เปรียบเหนือคู่แข่งผ่านประสิทธิภาพ นวัตกรรม และความเข้าใจลูกค้าที่เหนือกว่า</p>
+                            <p class="ml-8 text-sm text-gray-400 italic">ตัวอย่าง: นำเสนอสินค้า/บริการได้เร็วกว่า ถูกกว่า หรือดีกว่าคู่แข่ง</p>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Disadvantages of Not Using AI -->
+                <div class="lg:w-1/2 bg-red-900 p-10 rounded-3xl shadow-xl animate-on-scroll">
+                    <h3 class="text-3xl font-bold text-red-300 mb-8 text-center">
+                        ❌ ข้อจำกัดหรือข้อเสียของการไม่ใช้ AI ในธุรกิจ
+                    </h3>
+                    <ul class="space-y-8 text-lg text-gray-200">
+                        <li>
+                            <strong class="text-red-100 text-xl">📉 ประสิทธิภาพต่ำและข้อผิดพลาดจากคน:</strong>
+                            <p class="ml-8 mt-2">การพึ่งพาแรงงานคนเป็นหลัก อาจทำให้เกิดความล่าช้า ข้อผิดพลาด และความไร้ประสิทธิภาพ</p>
+                            <p class="ml-8 text-sm text-gray-400 italic">ผลกระทบ: การประมวลผลข้อมูลช้า, ข้อผิดพลาดในการบันทึก, บริการลูกค้าล่าช้า</p>
+                        </li>
+                        <li>
+                            <strong class="text-red-100 text-xl">🚫 ขาดข้อมูลเชิงลึกในการตัดสินใจ:</strong>
+                            <p class="ml-8 mt-2">อาจพลาดโอกาสในการทำความเข้าใจตลาด ลูกค้าอย่างลึกซึ้ง ทำให้การตัดสินใจอยู่บนพื้นฐานของสัญชาตญาณ</p>
+                            <p class="ml-8 text-sm text-gray-400 italic">ผลกระทบ: การตัดสินใจที่ผิดพลาด, การพลาดโอกาสทางธุรกิจ</p>
+                        </li>
+                        <li>
+                            <strong class="text-red-100 text-xl">👥 ประสบการณ์ลูกค้าแบบทั่วไป:</strong>
+                            <p class="ml-8 mt-2">การนำเสนอสินค้าและบริการเป็นแบบเดียวกันสำหรับลูกค้าทุกคน ขาดการปรับแต่งเฉพาะบุคคล</p>
+                            <p class="ml-8 text-sm text-gray-400 italic">ผลกระทบ: ลูกค้าไม่รู้สึกผูกพันกับแบรนด์, เปลี่ยนไปหาคู่แข่งง่าย</p>
+                        </li>
+                        <li>
+                            <strong class="text-red-100 text-xl">⛔️ พลาดโอกาสในการสร้างนวัตกรรม:</strong>
+                            <p class="ml-8 mt-2">พลาดโอกาสในการสร้างสรรค์นวัตกรรมใหม่ๆ ที่สามารถพลิกโฉมอุตสาหกรรม</p>
+                            <p class="ml-8 text-sm text-gray-400 italic">ผลกระทบ: การเติบโตหยุดชะงัก, ไม่สามารถตอบสนองความต้องการใหม่ๆ</p>
+                        </li>
+                        <li>
+                            <strong class="text-red-100 text-xl">💸 ต้นทุนการดำเนินงานสูงขึ้น:</strong>
+                            <p class="ml-8 mt-2">ในระยะยาว การพึ่งพาแรงงานคนอาจทำให้ต้นทุนการดำเนินงานสูงกว่า</p>
+                            <p class="ml-8 text-sm text-gray-400 italic">ผลกระทบ: กำไรลดลง, ความสามารถในการแข่งขันด้านราคาลดลง</p>
+                        </li>
+                        <li>
+                            <strong class="text-red-100 text-xl">⚔️ เสียเปรียบในการแข่งขัน:</strong>
+                            <p class="ml-8 mt-2">ไม่สามารถแข่งขันกับคู่แข่งที่นำ AI มาใช้ในการเพิ่มประสิทธิภาพ ลดต้นทุน หรือสร้างนวัตกรรมได้</p>
+                            <p class="ml-8 text-sm text-gray-400 italic">ผลกระทบ: เสียส่วนแบ่งตลาด, ไม่สามารถนำเสนอได้ดีเท่าคู่แข่ง</p>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Programs/Courses Section -->
+    <section id="programs" class="py-24 md:py-36 bg-gray-800">
+        <div class="container mx-auto px-6">
+            <h2 class="text-4xl md:text-5xl font-bold text-center mb-20 text-gray-100 animate-on-scroll">
+                หลักสูตรที่ตอบโจทย์ยุค AI
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
+                <!-- Program Card 1 -->
+                <div class="bg-gray-900 p-10 rounded-3xl shadow-xl card animate-on-scroll">
+                    <h3 class="text-2xl font-bold text-blue-300 mb-5">บริหารธุรกิจดิจิทัล</h3>
+                    <p class="text-gray-300 leading-relaxed">เรียนรู้การบริหารจัดการธุรกิจในยุคดิจิทัล พร้อมนำ AI มาใช้ในการวางแผนและดำเนินงานอย่างมีประสิทธิภาพ</p>
+                </div>
+                <!-- Program Card 2 -->
+                <div class="bg-gray-900 p-10 rounded-3xl shadow-xl card animate-on-scroll">
+                    <h3 class="text-2xl font-bold text-green-300 mb-5">วิทยาการข้อมูลและนวัตกรรมซอฟต์แวร์</h3>
+                    <p class="text-gray-300 leading-relaxed">พัฒนาทักษะด้าน Data Science, AI และการสร้างสรรค์นวัตกรรมซอฟต์แวร์ เพื่อตอบโจทย์ความต้องการของตลาด</p>
+                </div>
+                <!-- Program Card 3 -->
+                <div class="bg-gray-900 p-10 rounded-3xl shadow-xl card animate-on-scroll">
+                    <h3 class="text-2xl font-bold text-purple-300 mb-5">การตลาดดิจิทัลและนวัตกรรม</h3>
+                    <p class="text-gray-300 leading-relaxed">เจาะลึกกลยุทธ์การตลาดออนไลน์ พร้อมใช้ AI วิเคราะห์พฤติกรรมลูกค้า เพื่อสร้างแคมเปญที่มีประสิทธิภาพ</p>
+                </div>
+                <!-- Program Card 4 -->
+                <div class="bg-gray-900 p-10 rounded-3xl shadow-xl card animate-on-scroll">
+                    <h3 class="text-2xl font-bold text-yellow-300 mb-5">การจัดการโลจิสติกส์และโซ่อุปทานดิจิทัล</h3>
+                    <p class="text-gray-300 leading-relaxed">บริหารจัดการระบบโลจิสติกส์ด้วยเทคโนโลยี AI และ IoT เพื่อประสิทธิภาพสูงสุด ลดต้นทุนและเพิ่มความรวดเร็ว</p>
+                </div>
+                <!-- Program Card 5 -->
+                <div class="bg-gray-900 p-10 rounded-3xl shadow-xl card animate-on-scroll">
+                    <h3 class="text-2xl font-bold text-red-300 mb-5">ธุรกิจระหว่างประเทศ</h3>
+                    <p class="text-gray-300 leading-relaxed">เตรียมพร้อมสำหรับธุรกิจโลกในยุค AI ด้วยความเข้าใจตลาดและเทคโนโลยีที่เชื่อมโยงกันทั่วโลก</p>
+                </div>
+                <!-- Program Card 6 -->
+                <div class="bg-gray-900 p-10 rounded-3xl shadow-xl card animate-on-scroll">
+                    <h3 class="text-2xl font-bold text-teal-300 mb-5">นวัตกรรมธุรกิจและการเป็นผู้ประกอบการ</h3>
+                    <p class="text-gray-300 leading-relaxed">สร้างสรรค์ธุรกิจใหม่ๆ และนำ AI มาเป็นเครื่องมือในการเติบโตอย่างก้าวกระโดด</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Call to Action Section (Removed buttons) -->
+    <section class="gradient-bg text-white py-24 md:py-36 text-center rounded-t-4xl">
+        <div class="container mx-auto px-6 relative z-10">
+            <h2 class="text-4xl md:text-6xl font-extrabold mb-8 animate-fade-in">
+                พร้อมที่จะเป็น "เด็กหัวการค้าในยุค AI" แล้วหรือยัง?
+            </h2>
+            <p class="text-xl md:text-2xl mb-12 max-w-5xl mx-auto opacity-90 animate-fade-in animate-delay-200">
+                ร่วมสร้างอนาคตธุรกิจที่สดใสและก้าวหน้าไปกับเด็กหัวการค้า
+            </p>
+        </div>
+    </section>
+
+    <!-- JavaScript for smooth scrolling and mobile menu -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Smooth scrolling
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href');
+                    const targetElement = document.querySelector(targetId);
+                    if (targetElement) {
+                        const headerOffset = document.querySelector('header').offsetHeight; // Get header height
+                        const elementPosition = targetElement.getBoundingClientRect().top + window.pageYOffset;
+                        const offsetPosition = elementPosition - headerOffset - 25; // Adjust for fixed header and more padding
+
+                        window.scrollTo({
+                            top: offsetPosition,
+                            behavior: "smooth"
+                        });
+
+                        // Close mobile menu after clicking a link
+                        if (mobileNavMenu.classList.contains('mobile-nav-open')) {
+                            mobileNavMenu.classList.remove('mobile-nav-open');
+                            mobileNavMenu.classList.add('hidden');
+                        }
+                    }
+                });
+            });
+
+            // Mobile menu toggle
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileNavMenu = document.getElementById('mobile-nav-menu');
+
+            mobileMenuButton.addEventListener('click', () => {
+                mobileNavMenu.classList.toggle('hidden');
+                mobileNavMenu.classList.toggle('mobile-nav-open');
+            });
+
+            // Intersection Observer for scroll animations
+            const observerOptions = {
+                root: null, // viewport as root
+                rootMargin: '0px',
+                threshold: 0.1 // Trigger when 10% of the element is visible
+            };
+
+            const animateElementsInView = (entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const parentSection = entry.target;
+                        // Select all direct children or specific elements within the section that need staggering
+                        const elementsToAnimate = parentSection.querySelectorAll('h2.animate-on-scroll, p.animate-on-scroll, .md\\:w-1\\/2.animate-on-scroll, .card.animate-on-scroll, .lg\\:w-1\\/2.animate-on-scroll');
+                        
+                        elementsToAnimate.forEach((el, index) => {
+                            el.style.transitionDelay = `${index * 150}ms`; // Staggered delay for children (increased from 100ms to 150ms for more noticeable stagger)
+                            el.classList.add('is-visible');
+                        });
+                        observer.unobserve(parentSection); // Stop observing the parent section once its children are animated
+                    }
+                });
+            };
+
+            const observer = new IntersectionObserver(animateElementsInView, observerOptions);
+
+            // Observe each major content section
+            document.querySelectorAll('#about, #skills, #ai-comparison, #programs').forEach(section => {
+                observer.observe(section);
+            });
+
+            // Apply animate-on-scroll to specific elements within sections
+            // About Section
+            document.querySelector('#about h2').classList.add('animate-on-scroll');
+            document.querySelector('#about .md\\:w-1\\/2:nth-child(1)').classList.add('animate-on-scroll'); // Image container
+            document.querySelector('#about .md\\:w-1\\/2:nth-child(2)').classList.add('animate-on-scroll'); // Text block
+
+            // Skills Section
+            document.querySelector('#skills h2').classList.add('animate-on-scroll');
+            document.querySelectorAll('#skills .card').forEach(card => {
+                card.classList.add('animate-on-scroll');
+            });
+
+            // AI Comparison Section
+            document.querySelector('#ai-comparison h2').classList.add('animate-on-scroll');
+            document.querySelector('#ai-comparison p.max-w-5xl').classList.add('animate-on-scroll'); // Intro paragraph
+            document.querySelector('#ai-comparison .lg\\:w-1\\/2:nth-child(1)').classList.add('animate-on-scroll'); // Advantages column
+            document.querySelector('#ai-comparison .lg\\:w-1\\/2:nth-child(2)').classList.add('animate-on-scroll'); // Disadvantages column
+
+            // Programs Section
+            document.querySelector('#programs h2').classList.add('animate-on-scroll');
+            document.querySelectorAll('#programs .card').forEach(card => {
+                card.classList.add('animate-on-scroll');
+            });
+
+            // Hero section elements already have animate-fade-in, no need for animate-on-scroll here.
+        });
+    </script>
+</body>
+</html>
